@@ -1,11 +1,10 @@
-# Arkivio UI Automation Framework
+# UI Automation Framework
 
-This the UI Automation Framework for testing Arkivio Manamgent Console and Dashboard Report.
+This the UI Automation Framework for learning Python and Selenium.
 
 ## Getting Started
 
-Download the framework from https://hluo@git.rocketsoftware.com/scm/arkivioqa/arkiviouiautomation.git
-and start coding upon that.
+TBD
 
 ### Prerequisites
 
@@ -65,16 +64,16 @@ TBD
 
 ## Versioning
 
-We use [Gitbucket](https://git.rocketsoftware.com) for versioning. For the versions available, see the (https://git.rocketsoftware.com/projects/ARKIVIOQA/repos/arkiviouiautomation). 
+We use [GitHub]for versioning. For the versions available, see the (https://github.com/fingerella2000/e2enuggets). 
 
 ## Authors
 
-* **Hao Luo** - *Initial work* - https://www.yammer.com/rocketsoftware.com/users/7201663
-Arkivio QA team will be the main users of this framework, it is also shared among Rocket's employees.
+* **Hao Luo** - *Initial work* - fingerella2000@yahoo.com
+
 
 ## License
 
-Consult Rocket Software Support at http://www.rocketsoftware.com/support
+Consult fingerella2000@yahoo.com
 
 ## Acknowledgments
 
