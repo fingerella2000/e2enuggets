@@ -1,6 +1,42 @@
+import sys
+import os
+sys.path.append(os.getcwd())
 from selenium import webdriver         
 from PIL import Image, ImageChops, ImageDraw
+import requests
+import time
+import lxml.html as LH
+import pandas as pd
+import random
+import os, errno
 
+
+class FileUtil():
+
+    """read as list"""  
+    def readFromFile(self, file_path):
+        with open(file_path, 'r') as f:
+            _lists = f.read().splitlines()
+        f.closed
+        return _lists
+
+    """write list to file"""
+    def writeToFile(self, input, dir_path, file_path):
+        try:
+            if not os.path.exists(dir_path):
+                os.mkdir(dir_path)
+        except OSError as e:
+            if e.errno != errno.EEXIST:
+                raise
+        try:
+            with open(file_path, 'w') as f:
+                for line in input:
+                    f.write(line)
+                    f.write("\n")
+            f.closed
+        except:
+            raise("failed to write file")
+        return True
 
 class ImageComparer(object):
 
@@ -210,3 +246,63 @@ class TableWithGroupedHeaderCreator(object):
 
     def getContent(self):
         return list(zip(*self.table))
+
+class UserAgentUtil(object):
+    file_util = FileUtil()
+    def getRandomUA(self, file_path):
+        _uer_agents = self.file_util.readFromFile(file_path)
+        return random.choice(_uer_agents)
+
+    def collectAndSave(self, dir_path, file_path):
+        _result = self.collect()
+        self.file_util.writeToFile(_result, dir_path, file_path)
+
+
+    """collect a number of pages of chrome user agent string from https://developers.whatismybrowser.com/useragents/explore/software_name/chrome/"""
+    def collect(self):
+        _user_agent_list = []
+        url = 'https://developers.whatismybrowser.com/useragents/explore/software_name/chrome/'
+        for page in range(5):
+            response = requests.get(url + str(page+1))
+            html = response.content
+            dfs = pd.read_html(html)
+            _user_agent_list.extend(dfs[0]['User agent'].values.tolist()) 
+            time.sleep(10)
+            # for df in pd.read_html(html):
+            #     _user_agent_list.append(df['User agent'].values.tolist())             
+        return _user_agent_list
+
+class ProxyUtil(object):
+    file_util = FileUtil()
+
+    def getRandomProxy(self, file_path):
+        _proxies = self.file_util.readFromFile(file_path)
+        return random.choice(_proxies)
+
+    def collectAndSave(self, dir_path, file_path):
+        _result = self.collect()
+        self.file_util.writeToFile(_result, dir_path, file_path)
+
+
+    """collect a number of proxies from view-source:https://free-proxy-list.net/#list"""
+    def collect(self):
+        _proxy_list = []        
+        with open("resources/proxies.html", 'r') as f:
+            _file_data = f.read()
+            dfs = pd.read_html(_file_data)
+            _ip_addresses = dfs[0]['IP Address'].dropna().values.tolist()
+            _ports = dfs[0]['Port'].dropna().values.tolist()
+            # _anonymity = dfs[0]['Anonymity'].dropna().values.tolist()
+            for (i,p) in zip(_ip_addresses, _ports):
+                _proxy_list.append(str(i) + ":" +str(p))
+        f.closed          
+        return _proxy_list
+
+    
+# if __name__ == '__main__':
+    # uau = UserAgentUtil()
+    # uau.collectAndSave("resources/", "resources/useragents.txt")
+    # print(uau.getRandomUA("resources/useragents.txt"))
+    # proxy = ProxyUtil()
+    # proxy.collectAndSave("resources/", "resources/proxies.txt")
+    # print(proxy.getRandomProxy("resources/proxies.txt"))

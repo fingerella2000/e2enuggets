@@ -1,7 +1,11 @@
+import sys
+import os
+sys.path.append(os.getcwd())
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 import string
 import random
+from uiautomation.utility import UserAgentUtil
 
 class Constants():
     BASE_URL = "https://www.tmall.com"
@@ -22,7 +26,6 @@ class Constants():
     # HOME_PAGE_TITLE = "tmall.com"
     HOME_PAGE_TITLE = "淘宝"
 
-    SHOP_PAGE_TITLE = "快乐狐狸户外旗舰"
     SCROLL_STEP = 500
     SCROLL_INTERVAL = 0.3
 
@@ -30,6 +33,9 @@ class Constants():
     TEST_BASE_LINE_DIR = "baseline/"
     TEST_RESULT_DIR = "testresult/"
     TEST_REPORT_DIR = "testreport/"
+
+    """browser variables"""
+    USER_AGENT_RESOURCE = "resources/useragents.txt"
 
 class BaseWebDriver():
 
@@ -43,13 +49,21 @@ class BaseWebDriver():
             # return webdriver.Chrome('chromedriver')      
 
             # return browser slowly    
-            option=webdriver.ChromeOptions()            
-            option.add_argument('--user-data-dir=agentprofile')            
-            # option.add_argument('--user-agent=Googlebot')
+            option=webdriver.ChromeOptions()
+            _ua_util = UserAgentUtil()
+            _user_agent = _ua_util.getRandomUA(Constants.USER_AGENT_RESOURCE)
+            option.add_argument("--start-maximized")
+            option.add_argument('--user-data-dir=agentprofile')    
+            option.add_argument('--user-agent=%s' % _user_agent)            
+
+            # proxy = "137.134.250.60:8080" # IP:PORT or HOST:PORT
+            # option.add_argument('--user-agent=Googlebot') 
+            # option.add_argument('--proxy-server=%s' % proxy)
+
             browser=webdriver.Chrome(chrome_options=option)
             return browser
         elif browser == Constants.BROWSER_PHANTOM:
             return webdriver.PhantomJS()
         else:
             return webdriver.Firefox()
-          
+

@@ -10,7 +10,8 @@ import time
 
 class Locators(object):
     dictionary = {
-        # """tmall home page elements"""
+        # """tmall shop page elements"""
+        "body":(By.CSS_SELECTOR,"html > body"),
         "search_bar":(By.CSS_SELECTOR,"#mq"),
         "search_all":(By.CSS_SELECTOR,"#J_SearchBtn"),
         "search_shop":(By.CSS_SELECTOR,"#J_CurrShopBtn"),
@@ -21,6 +22,8 @@ class Locators(object):
         
     }
 
+class BodyElement(BasePageElement):
+    locator = Locators.dictionary["body"]
 class SearchBarElement(BasePageElement):
     locator = Locators.dictionary["search_bar"]
 class SearchAllElement(BasePageElement):
@@ -46,7 +49,7 @@ class ShopPage(BasePage):
     next_page_element = NextPageElement()
 
     def search(self, keywords):
-        WebDriverWait(self.driver, Constants.WAIT_TIME_SHORT).until(EC.title_contains(Constants.SHOP_PAGE_TITLE))
+        WebDriverWait(self.driver, Constants.WAIT_TIME_SHORT).until(EC.visibility_of_any_elements_located(Locators.dictionary["body"]))
        
         self._scrollDownAndUp()
         """entering search keywords"""
@@ -61,7 +64,7 @@ class ShopPage(BasePage):
         """click search button"""
         self.driver.element = self.search_shop_element
         self.driver.element.click()     
-        WebDriverWait(self.driver, Constants.WAIT_TIME_SHORT).until(EC.title_contains(Constants.SHOP_PAGE_TITLE))   
+        WebDriverWait(self.driver, Constants.WAIT_TIME_SHORT).until(EC.visibility_of_any_elements_located(Locators.dictionary["body"]))
         self._scrollDownAndUp()
         return True
 

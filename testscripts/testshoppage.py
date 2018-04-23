@@ -15,7 +15,6 @@ class TestShopPage(unittest.TestCase):
 
     def setUp(self):
         self.driver = BaseWebDriver.getDriver(self)
-        self.driver.maximize_window()     
         self.driver.get(Constants.SHOP_URL)
 
     def testSearchAndView(self):  
