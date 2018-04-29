@@ -11,22 +11,13 @@ import time
 class Locators(object):
     dictionary = {
         # """tmall home page elements"""
+        "body":(By.CSS_SELECTOR,"html > body"),
         "search_bar":(By.CSS_SELECTOR,"#mq"),
         "search_button":(By.CSS_SELECTOR,"#mallSearch > form > fieldset > div > button"),
         "top1_product":(By.CSS_SELECTOR,"#J_ItemList > div:nth-child(1)"), 
         "top2_product":(By.CSS_SELECTOR,"#J_ItemList > div:nth-child(2)"),        
         "top3_product":(By.CSS_SELECTOR,"#J_ItemList > div:nth-child(3)"),
-        "next_page":(By.CSS_SELECTOR,"#content > div > div.ui-page > div > b.ui-page-num > a.ui-page-next"),
-        
-        # """taobao home page elements"""
-        # "search_bar":(By.CSS_SELECTOR,"#q"),
-        # "search_button":(By.CSS_SELECTOR,"#J_TSearchForm > div.search-button > button"),
-        # "next_page":(By.CSS_SELECTOR,"#mainsrp-pager > div > div > div > ul > li.item.next"),
-        # "top1_product":(By.CSS_SELECTOR,"#mainsrp-itemlist > div > div > div:nth-child(1) > div:nth-child(2)"), 
-        # "top2_product":(By.CSS_SELECTOR,"#mainsrp-itemlist > div > div > div:nth-child(1) > div:nth-child(3)"), 
-        # "top3_product":(By.CSS_SELECTOR,"#mainsrp-itemlist > div > div > div:nth-child(1) > div:nth-child(4)"),
-        "search_tmall_only":(By.CSS_SELECTOR,"#J_relative > div.filter-row > div.filter-box.J_LaterHover > div > div.filters > a:nth-child(6) > span.icon.icon-btn-check-big"),
-        "tmall_only_is_selected":(By.CSS_SELECTOR,"#J_relative > div.filter-row > div.filter-box.J_LaterHover > div > div.filters > a.filter.icon-tag.J_Ajax.icon-hover > span.icon.icon-btn-check-big")
+        "next_page":(By.CSS_SELECTOR,"#content > div > div.ui-page > div > b.ui-page-num > a.ui-page-next")
     }
 
 class SearchBarElement(BasePageElement):
@@ -41,23 +32,17 @@ class Top2ProductElement(BasePageElement):
     locator = Locators.dictionary["top2_product"]
 class Top3ProductElement(BasePageElement):
     locator = Locators.dictionary["top3_product"]
-class SearchTmallOnlyElement(BasePageElement):
-    locator = Locators.dictionary["search_tmall_only"]
-class TmallOnlyIsSelectedElement(BasePageElement):
-    locator = Locators.dictionary["tmall_only_is_selected"]
 
-class HomePage(BasePage):
+class TMHomePage(BasePage):
     search_bar_element = SearchBarElement()
     search_button_element = SearchButtonElement()
     top1_product_element = Top1ProductElement()
     top2_product_element = Top2ProductElement()
     top3_product_element = Top3ProductElement()
     next_page_element = NextPageElement()
-    search_tmall_only_element = SearchTmallOnlyElement()
-    tmall_only_is_selected_element = TmallOnlyIsSelectedElement()
 
     def search(self, keywords):
-        WebDriverWait(self.driver, Constants.WAIT_TIME_SHORT).until(EC.title_contains(Constants.HOME_PAGE_TITLE))
+        WebDriverWait(self.driver, Constants.WAIT_TIME_SHORT).until(EC.visibility_of_any_elements_located(Locators.dictionary["body"]))
        
         self._scrollDownAndUp()
         """entering search keywords"""
@@ -75,11 +60,7 @@ class HomePage(BasePage):
         # self._scrollDownAndUp()
         return keywords in self.driver.title
 
-    def viewTop3Products(self, tmall_only=False):
-        if tmall_only is True:
-            self.driver.element = self.search_tmall_only_element
-            self.driver.element.click()
-            WebDriverWait(self.driver, Constants.WAIT_TIME_SHORT).until(EC.visibility_of_all_elements_located(Locators.dictionary["tmall_only_is_selected"]))  
+    def viewTop3Products(self):
         self._scrollDownAndUp()
 
         _top1_product = self.top1_product_element
@@ -101,7 +82,7 @@ class HomePage(BasePage):
     def viewTopPages(self, number_of_pages):
         for i in range(number_of_pages):
             print("viewing page: " + str(i+1))
-            self.viewTop3Products(tmall_only=True)
+            self.viewTop3Products()
             if i+1 == number_of_pages:
                 continue
             self.driver.element = self.next_page_element 

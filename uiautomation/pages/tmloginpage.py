@@ -17,15 +17,17 @@ class Actions(ActionChains):
 
 class Locators(object):
     dictionary = {
-        "title":(By.CSS_SELECTOR,"#mallPage > div.header > a"),
+        "title":(By.CSS_SELECTOR,"#mallPage > div.header > a"),        
+        "login_frame":(By.ID,"J_loginIframe"),
         "login_switch":(By.CSS_SELECTOR,"#J_LoginBox > div.hd > div.login-switch"),
         "username":(By.CSS_SELECTOR,"#TPL_username_1"),
         "password":(By.CSS_SELECTOR,"#TPL_password_1"),
         "login":(By.CSS_SELECTOR,"#J_SubmitStatic"),
         "slide_bar":(By.CSS_SELECTOR,"#nc_1_n1z"),
-        "slide_pass":(By.CSS_SELECTOR,"#nc_1__scale_text"),
+        "slide_pass":(By.CSS_SELECTOR,"#nc_1__scale_text > span > b"),
         "slide_bar_refresh":(By.CSS_SELECTOR,".nc-lang-cnt > a"),
         "slide_bar_container":(By.CSS_SELECTOR,"#nocaptcha")
+        
     }
 
 class TitleElement(BasePageElement):
@@ -56,7 +58,7 @@ class SlideBarRefreshElement(BasePageElement):
     locator = Locators.dictionary["slide_bar_refresh"]
 
 
-class LoginPage(BasePage):
+class TMLoginPage(BasePage):
     login_switch_element = LoginSwitchElement()
     login_element = LoginElement()
     page_title_element = TitleElement()
@@ -71,7 +73,7 @@ class LoginPage(BasePage):
         self.driver = driver
 
     def goTo(self):
-        self.driver.get(Constants.TB_LOGIN_URL)    
+        self.driver.get(Constants.TM_LOGIN_URL)    
         return self.isAt()
 
     def isAt(self):
@@ -80,7 +82,7 @@ class LoginPage(BasePage):
     def login(self, username, password):
         """switch to the login form iframe"""
         self.driver.switch_to_default_content()
-        WebDriverWait(self.driver, Constants.WAIT_TIME_SHORT).until(EC.frame_to_be_available_and_switch_to_it((By.ID,"J_loginIframe")))
+        WebDriverWait(self.driver, Constants.WAIT_TIME_SHORT).until(EC.frame_to_be_available_and_switch_to_it(Locators.dictionary["login_frame"]))
         """display PC login form"""
         self.driver.element = self.login_switch_element
         self.driver.element.click()
@@ -104,12 +106,12 @@ class LoginPage(BasePage):
         self.driver.element = self.login_element
         self.driver.element.click()
         
-        return Constants.TB_BASE_URL in self.driver.current_url
+        return Constants.TM_BASE_URL in self.driver.current_url
 
-    def loginBySlideVerify(self, username, password):
+    def loginBySlideBar(self, username, password):
         """switch to the login form iframe"""
         self.driver.switch_to_default_content()
-        WebDriverWait(self.driver, Constants.WAIT_TIME_SHORT).until(EC.frame_to_be_available_and_switch_to_it((By.ID,"J_loginIframe")))
+        WebDriverWait(self.driver, Constants.WAIT_TIME_SHORT).until(EC.frame_to_be_available_and_switch_to_it(Locators.dictionary["login_frame"]))
         """display PC login form"""
         self.driver.element = self.login_switch_element
         self.driver.element.click()
@@ -129,59 +131,72 @@ class LoginPage(BasePage):
         for c in list(password):
             _password_chain_actions.send_keys(c)
         _password_chain_actions.perform()
-
-               
-        """locating the slide bar"""
-        WebDriverWait(self.driver, Constants.WAIT_TIME_SHORT).until(EC.element_to_be_clickable((By.CSS_SELECTOR,"#nc_1_n1z")))            
-    
-        """try 3 times to pass the slide bar verification"""
-        for i in range(3):
-            _slide_bar_container_element = self.slide_bar_container_element
-            # slide bar container width is 298
-            """bypass the slide bar verification"""  
-            _slide_bar_element = self.slide_bar_element
-            # slide bar button width is 42
-            # actions = ActionChains(self.driver)
-            actions = Actions(self.driver)
-            actions.move_to_element(_slide_bar_element)
-            actions.click_and_hold(_slide_bar_element)
-            actions.wait(10)
-            #total x offset is 298-42 = 256
-            actions.move_by_offset(50, 10)
-            actions.move_by_offset(50, 0)
-            actions.move_by_offset(50, -10)
-            actions.move_by_offset(-50, -10)
-            actions.move_by_offset(-50, 0)
-            actions.move_by_offset(50, 10)
-            actions.move_by_offset(50, -10)
-            
-            actions.move_by_offset(50, 5)
-            actions.move_by_offset(-50, 5)
-            actions.move_by_offset(50, 5)
-            actions.move_by_offset(-50, 5)
-            actions.move_by_offset(-50, -5)
-            actions.move_by_offset(50, -5)
-            actions.move_by_offset(50, -5)
-            actions.move_by_offset(50, 5)            
-
-            actions.move_by_offset(10, -5)
-            actions.release(_slide_bar_element)
-            actions.perform()
-
-            """locating the slide bar fresh button"""
-            self.driver.element = self.slide_bar_refresh_element
-            self.driver.element.click()
-            
-            self.driver.switch_to_default_content()
-            WebDriverWait(self.driver, Constants.WAIT_TIME_SHORT).until(EC.frame_to_be_available_and_switch_to_it((By.ID,"J_loginIframe")))
-
        
-        """wait untill slide verification passed"""
-        WebDriverWait(self.driver, Constants.WAIT_TIME_SHORT).until(EC.visibility_of_element_located((By.CSS_SELECTOR,"#nc_1__scale_text")))
+        try:
+            """try 3 times to pass the slide bar verification"""
+            for i in range(3):
+                """locating the slide bar"""
+                WebDriverWait(self.driver, Constants.WAIT_TIME_SHORT).until(EC.element_to_be_clickable(Locators.dictionary["slide_bar"]))
+                _slide_bar_container_element = self.slide_bar_container_element
+                # slide bar container width is 298
+                """bypass the slide bar verification"""  
+                _slide_bar_element = self.slide_bar_element
+                # slide bar button width is 42
+                # actions = ActionChains(self.driver)
+                actions = Actions(self.driver)
+                actions.move_to_element(_slide_bar_element)
+                actions.click_and_hold(_slide_bar_element)
+                #total x offset is 298-42 = 256
+                # actions.move_by_offset(50, 10)
+                # actions.move_by_offset(50, 0)
+                # actions.move_by_offset(50, -10)
+                # actions.move_by_offset(-50, -10)
+                # actions.move_by_offset(-50, 0)
+                # actions.move_by_offset(50, 10)
+                # actions.move_by_offset(50, -10)
+                
+                # actions.move_by_offset(50, 5)
+                # actions.move_by_offset(-50, 5)
+                # actions.move_by_offset(50, 5)
+                # actions.move_by_offset(-50, 5)
+                # actions.move_by_offset(-50, -5)
+                # actions.move_by_offset(50, -5)
+                # actions.move_by_offset(50, -5)
+                # actions.move_by_offset(50, 5)            
+
+                actions.move_by_offset(50, 10)
+                actions.move_by_offset(50, -10)
+                actions.move_by_offset(50, 0)
+                actions.move_by_offset(50, 0)
+                actions.move_by_offset(50, -10)
+                actions.move_by_offset(8+i, 10+i)
+                actions.release(_slide_bar_element)
+                actions.perform()
+
+                try:
+                    time.sleep(3)
+                    """wait untill slide verification passed"""
+                    WebDriverWait(self.driver, Constants.WAIT_TIME_SHORT).until(EC.visibility_of_element_located(Locators.dictionary["slide_pass"]))                
+                    """then click login button"""
+                    self.driver.element = self.login_element
+                    self.driver.element.click()
+                    return Constants.TM_BASE_URL in self.driver.current_url
+                except:
+                    """locating the slide bar fresh button and click it to try slide bar again"""
+                    self.driver.element = self.slide_bar_refresh_element
+                    self.driver.element.click()
+                    
+                    self.driver.switch_to_default_content()
+                    WebDriverWait(self.driver, Constants.WAIT_TIME_SHORT).until(EC.frame_to_be_available_and_switch_to_it(Locators.dictionary["login_frame"]))
+
+                    # raise("cannot pass the slide bar verification!")
+                    print("cannot pass the slide bar verification!")
+            
+        except:
+            """if slide bar not found, then click login button directly"""
+            self.driver.element = self.login_element
+            self.driver.element.click()
+            return Constants.TM_BASE_URL in self.driver.current_url
+    
         
-        """then click login button"""
-        self.driver.element = self.login_element
-        self.driver.element.click()
-        
-        return Constants.TB_BASE_URL in self.driver.current_url
     

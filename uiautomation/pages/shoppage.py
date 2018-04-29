@@ -18,7 +18,11 @@ class Locators(object):
         "top1_product":(By.CSS_SELECTOR,"#J_ShopSearchResult > div > div.J_TItems > div:nth-child(1) > dl:nth-child(1)"), 
         "top2_product":(By.CSS_SELECTOR,"#J_ShopSearchResult > div > div.J_TItems > div:nth-child(1) > dl:nth-child(2)"),        
         "top3_product":(By.CSS_SELECTOR,"#J_ShopSearchResult > div > div.J_TItems > div:nth-child(1) > dl:nth-child(3)"),
-        "next_page":(By.CSS_SELECTOR,"#J_ShopSearchResult > div > div.J_TItems > div.pagination > a.J_SearchAsync.next")
+        "next_page":(By.CSS_SELECTOR,"#J_ShopSearchResult > div > div.J_TItems > div.pagination > a.J_SearchAsync.next"),
+        "popup_login_username":(By.XPATH,"//*[@id=\"TPL_username_1\"]"),
+        "popup_login_password":(By.XPATH,"//*[@id=\"TPL_password_1\"]"),
+        "popup_login_frame":(By.CSS_SELECTOR, "#J_sufei > iframe"),
+        "popup_login_submit":(By.CSS_SELECTOR, "#J_SubmitStatic")
         
     }
 
@@ -26,6 +30,14 @@ class BodyElement(BasePageElement):
     locator = Locators.dictionary["body"]
 class SearchBarElement(BasePageElement):
     locator = Locators.dictionary["search_bar"]
+class PopupLoginFrameElement(BasePageElement):
+    locator = Locators.dictionary["popup_login_frame"]
+class PopupLoginSubmitElement(BasePageElement):
+    locator = Locators.dictionary["popup_login_submit"]
+class PopupLoginUNElement(BasePageElement):
+    locator = Locators.dictionary["popup_login_username"]
+class PopupLoginPWDElement(BasePageElement):
+    locator = Locators.dictionary["popup_login_password"]
 class SearchAllElement(BasePageElement):
     locator = Locators.dictionary["search_all"]
 class SearchShopElement(BasePageElement):

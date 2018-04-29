@@ -12,8 +12,6 @@ class BaseTest(unittest.TestCase):
     
     def setUp(self):
         self.driver = BaseWebDriver.getDriver(self)
-        self.driver.maximize_window()
-        '''Login the system is needed for all test case'''
         self.login_page = LoginPage(self.driver)
         self.assertTrue(self.login_page.goTo())
         self.assertTrue(self.login_page.login(Constants.LOGIN_USERNAME, Constants.LOGIN_PWD))

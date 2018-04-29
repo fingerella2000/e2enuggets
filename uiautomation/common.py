@@ -8,10 +8,10 @@ import random
 from uiautomation.utility import UserAgentUtil
 
 class Constants():
-    BASE_URL = "https://www.tmall.com"
-    LOGIN_URL = "https://login.tmall.com"
-    # BASE_URL = "https://www.taobao.com"
-    # LOGIN_URL = "https://login.taobao.com"    
+    TM_BASE_URL = "https://www.tmall.com"
+    TB_BASE_URL = "https://www.taobao.com"
+    TM_LOGIN_URL = "https://login.tmall.com"
+    TB_LOGIN_URL = "https://login.taobao.com"    
     SHOP_URL = "https://actionfoxhw.tmall.com"
     BROWSER_FF = "FireFox"
     BROWSER_IE = "Internet Explorer"
@@ -23,8 +23,8 @@ class Constants():
     WAIT_TIME_SHORT = 5
 
     SEARCH_KEY_WORDS = "帽子"
-    # HOME_PAGE_TITLE = "tmall.com"
-    HOME_PAGE_TITLE = "淘宝"
+    HOME_PAGE_TITLE = "tmall.com"
+    # HOME_PAGE_TITLE = "淘宝"
 
     SCROLL_STEP = 500
     SCROLL_INTERVAL = 0.3
@@ -49,18 +49,23 @@ class BaseWebDriver():
             # return webdriver.Chrome('chromedriver')      
 
             # return browser slowly    
-            option=webdriver.ChromeOptions()
+            options=webdriver.ChromeOptions()
             _ua_util = UserAgentUtil()
             _user_agent = _ua_util.getRandomUA(Constants.USER_AGENT_RESOURCE)
-            option.add_argument("--start-maximized")
-            option.add_argument('--user-data-dir=agentprofile')    
-            option.add_argument('--user-agent=%s' % _user_agent)            
+            options.add_argument("--start-maximized")
+            options.add_argument('--user-data-dir=agentprofile')  
+            print(_user_agent)  
+            options.add_argument('--user-agent=%s' % _user_agent)    
+            options.add_argument('--test-type=%s' % "ui")      
+            options.add_argument('--disable-infobars')  
+            options.add_argument('--ignore-certificate-errors-spki-list')           
+            options.add_argument('--ignore-ssl-errors') 
 
-            # proxy = "137.134.250.60:8080" # IP:PORT or HOST:PORT
-            # option.add_argument('--user-agent=Googlebot') 
-            # option.add_argument('--proxy-server=%s' % proxy)
+            proxy = "wx.rocketark.com:80" # IP:PORT or HOST:PORT
+            # options.add_argument('--user-agent=Googlebot') 
+            options.add_argument('--proxy-server=%s' % proxy)
 
-            browser=webdriver.Chrome(chrome_options=option)
+            browser=webdriver.Chrome(chrome_options=options)
             return browser
         elif browser == Constants.BROWSER_PHANTOM:
             return webdriver.PhantomJS()

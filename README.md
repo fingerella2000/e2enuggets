@@ -10,11 +10,14 @@ TBD
 
 Python 3.6.4
 Selenium 3.11.0
-
+BeautifulSoup4
+pandas
+html5lib
+lxm
 Pillow - Python Imaging Library (Fork)
 
 Install Pillow by running following command:
-pip install pillow
+python3 -m pip install pillow
 
 ### Installing
 

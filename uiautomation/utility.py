@@ -9,7 +9,7 @@ import lxml.html as LH
 import pandas as pd
 import random
 import os, errno
-
+from requests.auth import HTTPProxyAuth
 
 class FileUtil():
 
@@ -286,23 +286,47 @@ class ProxyUtil(object):
 
     """collect a number of proxies from view-source:https://free-proxy-list.net/#list"""
     def collect(self):
-        _proxy_list = []        
-        with open("resources/proxies.html", 'r') as f:
-            _file_data = f.read()
-            dfs = pd.read_html(_file_data)
-            _ip_addresses = dfs[0]['IP Address'].dropna().values.tolist()
-            _ports = dfs[0]['Port'].dropna().values.tolist()
+        _proxy_list = []     
+        _column_ip = 'IP Address'
+        _column_port = 'Port'
+        _column_type = 'Type'
+        _column_anonymity_filter = 'elite proxy'
+        _column_type_filter = 'HTTPS'
+
+############ scrape from website ################################
+        url = 'http://www.mogumiao.com/web'
+        for page in range(3):
+            response = requests.get(url)
+            html = response.content
+            dfs = pd.read_html(html)
+            """filter dataframe by row value when Anonymity == 'elite proxy'"""
+            df = dfs[0][(dfs[0].Anonymity == 'elite proxy')]
+            _ip_addresses = df['IP Address'].dropna().values.tolist()
+            _ports = df['Port'].dropna().values.tolist()
             # _anonymity = dfs[0]['Anonymity'].dropna().values.tolist()
             for (i,p) in zip(_ip_addresses, _ports):
                 _proxy_list.append(str(i) + ":" +str(p))
-        f.closed          
         return _proxy_list
 
+########### read from static html file ########################
+        # with open("resources/proxies.html", 'r') as f:
+        #     _file_data = f.read()
+        #     dfs = pd.read_html(_file_data)
+        #     """filter dataframe by row value when Anonymity == 'elite proxy'"""
+        #     df = dfs[0][(dfs[0].Anonymity == _column_anonymity_filter)]
+        #     _ip_addresses = df[_column_ip].dropna().values.tolist()
+        #     _ports = df[_column_port].dropna().values.tolist()
+        #     for (i,p) in zip(_ip_addresses, _ports):
+        #         _proxy_list.append(str(i) + ":" +str(p))
+        # f.closed          
+        # return _proxy_list
+################################################################
+
     
-# if __name__ == '__main__':
+if __name__ == '__main__':
     # uau = UserAgentUtil()
     # uau.collectAndSave("resources/", "resources/useragents.txt")
     # print(uau.getRandomUA("resources/useragents.txt"))
-    # proxy = ProxyUtil()
-    # proxy.collectAndSave("resources/", "resources/proxies.txt")
+    proxy = ProxyUtil()
+    proxy.collectAndSave("resources/", "resources/proxies.txt")
     # print(proxy.getRandomProxy("resources/proxies.txt"))
